@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object NewsApiInstance {
 
-    val newsInstance : NewsApi
+    val newsInstance: NewsApi
 
     init {
         val retrofit = Retrofit.Builder()

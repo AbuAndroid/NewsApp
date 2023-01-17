@@ -10,20 +10,23 @@ import com.example.viewmodellivedata.model.Article
 
 class NewsAdapter(
     private val allNewsList: MutableList<Article>,
-    private val onItemClick: (Article) -> Unit
+    //private val onItemClick: (Article) -> Unit
     ) :
     RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            NewsCustomLayoutBinding.inflate(
-                LayoutInflater.from(
-                    parent.context
-                )
-            )
-        )
+        var layoutInflater = LayoutInflater.from(parent.context)
+        val binding = NewsCustomLayoutBinding.inflate(layoutInflater,parent,false)
+
+        return ViewHolder(binding)
+
+//        return ViewHolder(
+//            NewsCustomLayoutBinding.inflate(
+//                LayoutInflater.from(
+//                    parent.context
+//                )
+//            )
+//        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -31,8 +34,8 @@ class NewsAdapter(
         Glide.with(holder.itemView)
             .load(itemsPosition.urlToImage)
             .into(holder.binding.uiIvNewsImage)
-        holder.binding.uiTvTitle.text = allNewsList[position].title
-        holder.binding.uiTvDescription.text = allNewsList[position].description
+        holder.binding.uiTvTitle.text = itemsPosition.title
+        holder.binding.uiTvDescription.text = itemsPosition.description
     }
 
     override fun getItemCount(): Int {
@@ -40,13 +43,7 @@ class NewsAdapter(
     }
 
     class ViewHolder(val binding: NewsCustomLayoutBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        init {
-            binding.root.setOnClickListener {
-                //onItemClick(allNewsList[adapterPosition])
-            }
-        }
-    }
+        RecyclerView.ViewHolder(binding.root) {}
 
     @SuppressLint("NotifyDataSetChanged")
     fun onNewsChanged(newsList: List<Article>) {
