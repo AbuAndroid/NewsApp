@@ -15,18 +15,9 @@ class NewsAdapter(
     RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        var layoutInflater = LayoutInflater.from(parent.context)
+        val layoutInflater = LayoutInflater.from(parent.context)
         val binding = NewsCustomLayoutBinding.inflate(layoutInflater,parent,false)
-
         return ViewHolder(binding)
-
-//        return ViewHolder(
-//            NewsCustomLayoutBinding.inflate(
-//                LayoutInflater.from(
-//                    parent.context
-//                )
-//            )
-//        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -47,8 +38,8 @@ class NewsAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun onNewsChanged(newsList: List<Article>) {
-        this.allNewsList.clear()
-        this.allNewsList.addAll(newsList)
+        allNewsList.clear()
+        allNewsList.addAll(newsList)
         notifyDataSetChanged()
     }
 }

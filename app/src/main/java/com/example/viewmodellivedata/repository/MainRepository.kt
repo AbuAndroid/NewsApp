@@ -1,9 +1,10 @@
 package com.example.viewmodellivedata.repository
 
-import com.example.viewmodellivedata.network.NewsApi
-import com.example.viewmodellivedata.network.NewsApiInstance
-import com.example.viewmodellivedata.utils.Constants
+import com.example.viewmodellivedata.network.NewsApiHelper
 
-class MainRepository(private val NewsApiInstance: NewsApi) {
-    fun getAllNews() = NewsApiInstance.getNewsAllNews(Constants.COUNTRY,Constants.CATEGORY,Constants.API_KEY)
+
+class MainRepository(private val NewsApiHelper:NewsApiHelper) {
+
+    suspend fun getAllNews() = NewsApiHelper.getAllNews()
+   // fun getAllNews() = NewsApiInstance.getNewsAllNews(Constants.COUNTRY,Constants.CATEGORY,Constants.API_KEY)
 }

@@ -1,53 +1,42 @@
 package com.example.viewmodellivedata.viewmodel
 
+
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.viewmodellivedata.model.Article
 import com.example.viewmodellivedata.model.News
-import com.example.viewmodellivedata.network.NewsApiInstance
 import com.example.viewmodellivedata.repository.MainRepository
-import com.example.viewmodellivedata.utils.Constants
-import com.example.viewmodellivedata.utils.Constants.*
+import com.example.viewmodellivedata.utils.AppResult
+import com.example.viewmodellivedata.utils.NetworkHelper
+import kotlinx.coroutines.launch
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
-import javax.security.auth.callback.Callback
 
-class NewsViewModel(private val repository: MainRepository) : ViewModel() {
-    var newsLiveData = MutableLiveData<List<Article>>()
-    fun getAllNews(){
-        val response = repository.getAllNews()
-        response.enqueue(object : retrofit2.Callback<News?> {
-            override fun onResponse(call: Call<News?>, response: Response<News?>) {
-                newsLiveData.postValue(response.body()?.articles)
-            }
+class NewsViewModel(private val repository: MainRepository,private val networkHelper: NetworkHelper) : ViewModel() {
+    val newsLiveData = MutableLiveData<AppResult<List<Article>>>()
+    val news : LiveData<AppResult<List<Article>>>
+                get() = newsLiveData
 
-            override fun onFailure(call: Call<News?>, t: Throwable) {
-                Log.e("error",t.toString())
-            }
-        })
+    init {
+        fetchAllNews()
     }
 
-
-   // fun popularNews() {
-//        NewsApiInstance.newsInstance.getNewsAllNews(
-//            country = Constants.COUNTRY,
-//            category = Constants.CATEGORY,
-//            apiKey = Constants.API_KEY
-//        ).enqueue(object : retrofit2.Callback<Article?> {
-//            override fun onResponse(call: Call<Article?>, response: Response<Article?>) {
-//
-//            }
-//
-//            override fun onFailure(call: Call<Article?>, t: Throwable) {
-//                TODO("Not yet implemented")
-//            }
-//        })
-//    }
-//    fun observeNewsLiveData(): MutableLiveData<List<Article>> {
-//        return newsLiveData
-//    }
-
+    private fun fetchAllNews() {
+        viewModelScope.launch {
+            newsLiveData.postValue(AppResult.loading(null))
+            if (networkHelper.isNetworkConnected()) {
+                Log.e("data",repository.getAllNews().body().toString())
+                repository.getAllNews().let {
+                    if(it.isSuccessful){
+                        Log.e("work",it.body().toString())
+                       // newsLiveData.postValue(AppResult.success(it.body()?.articles))
+                    }
+                }
+            } else newsLiveData.postValue(AppResult.error("No internet connection", null))
+        }
+    }
 }

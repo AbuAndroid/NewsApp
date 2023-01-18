@@ -1,6 +1,9 @@
 package com.example.viewmodellivedata.model
 
+import com.squareup.moshi.Json
+
 data class Article(
+
     val author: String,
     val content: String,
     val description: String,
