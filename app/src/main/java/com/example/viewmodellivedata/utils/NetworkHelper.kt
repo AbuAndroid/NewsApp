@@ -33,7 +33,6 @@ class NetworkHelper(private val context: Context) {
                 }
             }
         }
-
         return result
     }
 }

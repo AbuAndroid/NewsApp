@@ -1,10 +1,14 @@
 package com.example.viewmodellivedata.repository
 
-import com.example.viewmodellivedata.network.NewsApiHelper
+import com.example.viewmodellivedata.model.Article
+import com.example.viewmodellivedata.network.NewsApiService
+import com.example.viewmodellivedata.utils.Constants
 
 
-class MainRepository(private val NewsApiHelper:NewsApiHelper) {
 
-    suspend fun getAllNews() = NewsApiHelper.getAllNews()
-   // fun getAllNews() = NewsApiInstance.getNewsAllNews(Constants.COUNTRY,Constants.CATEGORY,Constants.API_KEY)
+class MainRepository(private val NewApiService:NewsApiService,private val SharedPreferenceHandler:SharedPreferenceHandler){
+    suspend fun getAllNews() = NewApiService.getAllNews(Constants.SOURSES,Constants.API_KEY)
+    fun gettAllSavedNews() = SharedPreferenceHandler.getSavedList()
+    fun setList(article: Article) = SharedPreferenceHandler.setSaveItme(article)
+    fun removeItemSavedList(article: Article) = SharedPreferenceHandler.setRemoveItem(article)
 }

@@ -4,20 +4,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/red"
+    android:background="@drawable/wavebottom"
     tools:context=".ui.NewsActivity">
 
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/uiEtSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/searchviewbackground"
+        android:drawableStart="@drawable/ic_baseline_search"
+        android:hint="Search by title"
+        android:minHeight="48dp"
+        android:padding="10dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/uiRvNewsContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
+        android:padding="10dp"
+        android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/uiEtSearch"
+        app:layout_constraintStart_toStartOf="@+id/uiEtSearch"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/news_custom_layout"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/uiEtSearch" />
 
-    <ProgressBar
+    <androidx.core.widget.ContentLoadingProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"

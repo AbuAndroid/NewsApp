@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ViewModelLiveData</string>
+    <string name="str_title_text">Title</string>
+    <string name="str_description_text">Description</string>
+    <string name="str_link_text">Link</string>
+    <string name="app_second_Activity_name">NewsWebview</string>
 </resources>
