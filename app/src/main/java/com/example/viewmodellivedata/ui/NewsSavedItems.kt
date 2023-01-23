@@ -4,14 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import com.example.viewmodellivedata.R
+import android.util.Log
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.viewmodellivedata.adapter.NewsAdapter
-import com.example.viewmodellivedata.databinding.ActivityMainBinding
 import com.example.viewmodellivedata.databinding.ActivityNewsSavedItemsBinding
 import com.example.viewmodellivedata.model.Article
 import com.example.viewmodellivedata.viewmodel.NewsSavedItemsViewModel
-import com.example.viewmodellivedata.viewmodel.NewsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NewsSavedItems : AppCompatActivity() {
@@ -21,17 +19,9 @@ class NewsSavedItems : AppCompatActivity() {
         NewsAdapter(
             allNewsList = mutableListOf(),
             onLinkClicked = this::viewWebsite,
-            onSaveOrDeleteItem = this::onSaveOrDeleteItem
+            onSave = this::saveItem,
+            onRemove = this::removeItem
         )
-    }
-
-    private fun viewWebsite(Article:Article) {
-        val link = Article.url
-        val bundle = Bundle()
-        bundle.putString("link", link)
-        val intent = Intent(this, NewsWebView::class.java)
-        intent.putExtras(bundle)
-        startActivity(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,27 +29,47 @@ class NewsSavedItems : AppCompatActivity() {
         binding = ActivityNewsSavedItemsBinding.inflate(layoutInflater)
         setContentView(binding?.root)
         setUpUi()
-        setUpObserver()
+        getUserData()
     }
 
-    private fun setUpObserver() {
-        newssavedViewModel.news.observe(this){
+    override fun onResume() {
+        super.onResume()
+        getUserData()
+    }
+    private fun getUserData() {
+        newssavedViewModel.news.observe(this) {
             renderList(it)
+            Log.e("observedData",it.size.toString())
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun renderList(news: List<Article>?) {
-        if (news != null) {
-            newsAdapter.onNewsChanged(news)
-        }
-        newsAdapter.notifyDataSetChanged()
+    private fun renderList(list: List<Article>) {
+        newsAdapter.onNewsChanged(list)
     }
 
     private fun setUpUi() {
         binding?.uiRvSavedlist?.adapter = newsAdapter
     }
-    private fun onSaveOrDeleteItem(article: Article){
 
+    private fun saveItem(article: Article) {
+
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun removeItem(article: Article) {
+        Log.e("removed","remove item clicked.."+article.title)
+       // ItemTouchHelper(object:ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.ANIMATION_TYPE_SWIPE_SUCCESS))
+        newssavedViewModel.removeItem(article)
+        getUserData()
+        Log.e("getteddata",getUserData().toString())
+    }
+
+    private fun viewWebsite(Article: Article) {
+        val link = Article.url
+        val bundle = Bundle()
+        bundle.putString("link", link)
+        val intent = Intent(this, NewsWebView::class.java)
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 }

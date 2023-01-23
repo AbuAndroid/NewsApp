@@ -18,12 +18,15 @@ class NewsSavedItemsViewModel(private val repository: MainRepository):ViewModel(
         fetchAllSavedList()
     }
 
-    private fun fetchAllSavedList() {
+    fun fetchAllSavedList() {
         viewModelScope.launch {
             repository.gettAllSavedNews().let {
-                Log.e("saved",it.toString())
-                newsLiveData.setValue(it)
+                newsLiveData.postValue(it)
             }
         }
+    }
+
+    fun removeItem(item: Article) {
+        repository.removeItemSavedList(item)
     }
 }

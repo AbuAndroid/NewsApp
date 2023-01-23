@@ -15,17 +15,15 @@ class NewsViewModel(
     private val repository: MainRepository,
     private val networkHelper: NetworkHelper
 ) : ViewModel() {
-    var newsLiveData = MutableLiveData<AppResult<List<Article>>>()
-    val news: LiveData<AppResult<List<Article>>>
-        get() = newsLiveData
+    val newsLiveData = MutableLiveData<AppResult<List<Article>>>()
+    val news: LiveData<AppResult<List<Article>>> = newsLiveData
     init {
         fetchAllNews()
-
     }
 
-    private fun fetchAllNews() {
+    fun fetchAllNews() {
         viewModelScope.launch {
-            newsLiveData.setValue(AppResult.loading(null))
+            newsLiveData.value = AppResult.loading(null)
             if (networkHelper.isNetworkConnected()) {
                 repository.getAllNews().let {
                     if (it.isSuccessful) {
@@ -44,5 +42,17 @@ class NewsViewModel(
 
     fun removeItem(item: Article) {
         repository.removeItemSavedList(item)
+    }
+
+    fun filterUserList(searchText: String) {
+        if (searchText.isEmpty()) {
+
+            renderList(news)
+        } else {
+            val filteredList = news.filter {
+                it.title.contains(searchText, true)
+            }
+            renderList(filteredList)
+        }
     }
 }

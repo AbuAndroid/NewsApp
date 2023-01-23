@@ -2,7 +2,6 @@ package com.example.viewmodellivedata.repository
 
 import android.content.Context
 import android.content.SharedPreferences.Editor
-import android.util.Log
 import com.example.viewmodellivedata.model.Article
 import com.example.viewmodellivedata.utils.Constants.Companion.SHARED_PREFERENCE_NAME
 import com.example.viewmodellivedata.utils.Constants.Companion.USER_NAME
@@ -20,7 +19,6 @@ class SharedPreferenceHandler(context: Context) {
         val userModel = getUserList?.find { item.title==it.title }
         if (userModel==null){
             item.let { getUserList?.add(it) }
-            Log.e("savedList",getUserList.toString())
             val list = Gson().toJson(getUserList)
             editor.putString(USER_NAME, list)?.apply()
         }
@@ -30,26 +28,17 @@ class SharedPreferenceHandler(context: Context) {
         val userModel = getUserList?.find { it.title == item.title }
         if (userModel!=null){
             item.let { getUserList.remove(it) }
-            Log.e("remove",getUserList.toString())
             val list = Gson().toJson(getUserList)
-            editor.putString(USER_NAME, list)?.apply()
+            editor.putString(USER_NAME, list)?.commit()
         }
     }
     fun getSavedList(): MutableList<Article>? {
-
-        var savedList:List<Article>?= arrayListOf()
+        var savedList:MutableList<Article>?= mutableListOf()
         val user = sharedPreference.getString(USER_NAME, null)
         if(user?.isNotEmpty()==true) {
             val type = object: TypeToken<ArrayList<Article>>(){}.type
             savedList = Gson().fromJson<ArrayList<Article>>(user,type)
-
         }
         return savedList?.toMutableList()
-
-
-//        val savedlist =  sharedPreference.getString(USER_NAME, null)
-//        val type = object : TypeToken<List<Article>>() {}.type
-//        allSavedList = Gson().fromJson<MutableList<Article>>(savedlist,type)
-//        return allSavedList
     }
 }

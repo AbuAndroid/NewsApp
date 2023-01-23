@@ -9,5 +9,3 @@ interface NewsApiService{
     @GET("v2/top-headlines")
     suspend fun getAllNews(@Query("sources")sources: String,@Query("apikey")apiKey:String): Response<News>
 }
-
-//@Query("country")country:String, @Query("category")category:String,

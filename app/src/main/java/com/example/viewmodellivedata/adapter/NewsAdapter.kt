@@ -22,7 +22,8 @@ import com.example.viewmodellivedata.model.Article
 class NewsAdapter(
     private val allNewsList: MutableList<Article>,
     private val onLinkClicked: (Article) -> Unit,
-    private val onSaveOrDeleteItem: (Article) -> Unit
+    private val onSave: (Article) -> Unit,
+    private val onRemove: (Article) -> Unit
     ) :
     RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
@@ -32,6 +33,7 @@ class NewsAdapter(
         return ViewHolder(layoutInflater)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemsPosition = allNewsList[position]
         with(holder){
@@ -71,15 +73,15 @@ class NewsAdapter(
                     onLinkClicked(allNewsList[position])
                 }
             }
-            uiIvSave.apply {
-                this.setOnClickListener {
-//                    if(itemsPosition.isSaved==true){
-//                        holder.uiIvSave.setImageResource(R.drawable.ic_baseline_bookmark_added)
-//                    }else{
-//                        holder.uiIvSave.setImageResource(R.drawable.ic_baseline_bookmark_add)
-//                    }
-                    onSaveOrDeleteItem(allNewsList[position])
-                }
+            uiIvSave.setOnClickListener {
+                Log.e("save","save item clicked..  "+allNewsList[adapterPosition])
+                onSave(allNewsList[adapterPosition])
+                notifyDataSetChanged()
+            }
+            uiIvRemove.setOnClickListener {
+                Log.e("remove","remove item clicked.."+allNewsList[adapterPosition])
+                onRemove(allNewsList[adapterPosition])
+                notifyDataSetChanged()
             }
         }
     }
@@ -95,15 +97,7 @@ class NewsAdapter(
         val uiImageProgress:ProgressBar = itemView.findViewById(R.id.uiImageProgress)
         val uiTvWebLink:TextView = itemView.findViewById(R.id.uiTvWebLink)
         val uiIvSave:ImageView = itemView.findViewById(R.id.uiIvSave)
-
-//        if(allNewsList[position].isSaved == true){
-//            allNewsList[position].isSaved = false
-//            this.setImageResource(R.drawable.ic_baseline_bookmark_add)
-//
-//        }else{
-//            allNewsList[position].isSaved = true
-//            this.setImageResource(R.drawable.ic_baseline_bookmark_added)
-//        }
+        val uiIvRemove:ImageView = itemView.findViewById(R.id.uiIvRemove)
     }
     @SuppressLint("NotifyDataSetChanged")
     fun onNewsChanged(newsList: List<Article>) {
