@@ -15,29 +15,31 @@ class NewsViewModel(
     private val repository: MainRepository,
     private val networkHelper: NetworkHelper
 ) : ViewModel() {
-    val newsLiveData = MutableLiveData<AppResult<List<Article>>>()
-    val news: LiveData<AppResult<List<Article>>> = newsLiveData
+    val newsLiveData = MutableLiveData<List<Article>>()
+    val news = MutableLiveData<List<Article>>()
+
+    var _success: LiveData<List<Article>> = newsLiveData
+
     init {
         fetchAllNews()
     }
-
     fun fetchAllNews() {
         viewModelScope.launch {
-            newsLiveData.value = AppResult.loading(null)
             if (networkHelper.isNetworkConnected()) {
                 repository.getAllNews().let {
                     if (it.isSuccessful) {
-                        newsLiveData.setValue(AppResult.success(it.body()?.articles))
+                        news.setValue(it.body()?.articles)
                     }else{
-                        newsLiveData.setValue(AppResult.error(it.errorBody().toString(),null))
+                        news.value = it.errorBody()
+                        newsLiveData.setValue(it.errorBody(),null)
                     }
                 }
             } else newsLiveData.setValue(AppResult.error("No internet connection", null))
         }
     }
 
-    fun setItem(article:Article){
-        repository.setList(article)
+    fun saveItem(article:Article){
+        repository.saveItem(article)
     }
 
     fun removeItem(item: Article) {
@@ -46,9 +48,9 @@ class NewsViewModel(
 
     fun filterUserList(searchText: String) {
         if (searchText.isEmpty()) {
-
-            renderList(news)
+//            renderList(news)
         } else {
+            val filter = newsLiveData
             val filteredList = news.filter {
                 it.title.contains(searchText, true)
             }

@@ -9,6 +9,6 @@ import com.example.viewmodellivedata.utils.Constants
 class MainRepository(private val NewApiService:NewsApiService,private val SharedPreferenceHandler:SharedPreferenceHandler){
     suspend fun getAllNews() = NewApiService.getAllNews(Constants.SOURSES,Constants.API_KEY)
     fun gettAllSavedNews() = SharedPreferenceHandler.getSavedList()
-    fun setList(article: Article) = SharedPreferenceHandler.setSaveItme(article)
+    fun saveItem(article: Article) = SharedPreferenceHandler.setSaveItme(article)
     fun removeItemSavedList(article: Article) = SharedPreferenceHandler.setRemoveItem(article)
 }

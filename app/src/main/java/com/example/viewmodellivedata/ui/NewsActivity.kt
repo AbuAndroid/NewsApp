@@ -46,7 +46,6 @@ class NewsActivity : AppCompatActivity() {
         }else{
             startActivity(Intent(this,NewsSavedItems::class.java))
         }
-
     }
 
     private fun setUpListeners() {
@@ -56,27 +55,26 @@ class NewsActivity : AppCompatActivity() {
     }
 
     private fun setUpObservers() {
-        newsViewModel.news.observe(this) {
-            when (it.status) {
-                Status.SUCCESS -> {
-                    binding?.progressBar?.visibility = View.GONE
-                    binding?.uiRvNewsContainer?.visibility = View.VISIBLE
-                    it.data?.let {
-                        //checkDataSavedInDb(it)
-                        news.clear()
-                        news.addAll(it)
-                        renderList(it)
-                    }
-                }
-                Status.LOADING -> {
-                    binding?.progressBar?.visibility = View.VISIBLE
-                    binding?.uiRvNewsContainer?.visibility = View.GONE
-                }
-                Status.ERROR -> {
-                    binding?.progressBar?.visibility = View.GONE
-                    Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
-                }
-            }
+        newsViewModel._success.observe(this) {
+//            when (it.status) {
+//                Status.SUCCESS -> {
+//                    binding?.progressBar?.visibility = View.GONE
+//                    binding?.uiRvNewsContainer?.visibility = View.VISIBLE
+//                    it.data?.let {
+//                        //checkDataSavedInDb(it)
+//                        news.clear()
+//                        news.addAll(it)
+//                        renderList(it)
+//                    }
+//                }
+//                Status.LOADING -> {
+//                    binding?.progressBar?.visibility = View.VISIBLE
+//                    binding?.uiRvNewsContainer?.visibility = View.GONE
+//                }
+//                Status.ERROR -> {
+//                    binding?.progressBar?.visibility = View.GONE
+//                }
+//            }
         }
     }
 
@@ -86,7 +84,7 @@ class NewsActivity : AppCompatActivity() {
 
     private fun saveItem(item: Article) {
         //item.isSaved = true
-        newsViewModel.setItem(item)
+        newsViewModel.saveItem(item)
     }
 
     private fun removeItem(item: Article) {
@@ -112,16 +110,16 @@ class NewsActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkDataSavedInDb(newsList: List<Article>) {
-        newsList.forEach { list ->
-            val savedList = newsViewModel.news.value?.data
-            savedList?.forEach {
-                if (it.title == list.title) {
-                    list.isSaved = true
-                }
-            }
-        }
-    }
+//    private fun checkDataSavedInDb(newsList: List<Article>) {
+//        newsList.forEach { list ->
+//            val savedList = newsViewModel.news.value?.data
+//            savedList?.forEach {
+//                if (it.title == list.title) {
+//                    list.isSaved = true
+//                }
+//            }
+//        }
+//    }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun renderList(news: List<Article>) {
@@ -143,6 +141,5 @@ class NewsActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-
     }
 }
