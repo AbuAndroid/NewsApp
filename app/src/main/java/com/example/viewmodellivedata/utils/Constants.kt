@@ -9,5 +9,6 @@ class Constants {
         const val SOURSES = "techcrunch"
         const val SHARED_PREFERENCE_NAME = "NEWS_LIST"
         const val USER_NAME = "SAVED_NEWS"
+        const val ERROR_SERVER = "Something went wrong in the server. Please try again after some time.."
     }
 }

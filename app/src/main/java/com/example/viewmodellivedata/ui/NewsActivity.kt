@@ -10,6 +10,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.viewmodellivedata.R
 import com.example.viewmodellivedata.adapter.NewsAdapter
 import com.example.viewmodellivedata.databinding.ActivityMainBinding
@@ -49,13 +51,13 @@ class NewsActivity : AppCompatActivity() {
     }
 
     private fun setUpListeners() {
-        binding?.uiEtSearch?.doOnTextChanged { text, start, before, count ->
-            newsViewModel.filterUserList(text.toString())
-        }
+//        binding?.uiEtSearch?.doOnTextChanged { text, start, before, count ->
+//            newsViewModel.filterUserList(text.toString())
+//        }
     }
 
     private fun setUpObservers() {
-        newsViewModel._success.observe(this) {
+ //       newsViewModel._success.observe(this) {
 //            when (it.status) {
 //                Status.SUCCESS -> {
 //                    binding?.progressBar?.visibility = View.GONE
@@ -75,11 +77,48 @@ class NewsActivity : AppCompatActivity() {
 //                    binding?.progressBar?.visibility = View.GONE
 //                }
 //            }
-        }
+       // }
     }
 
     private fun setUpUi() {
         binding?.uiRvNewsContainer?.adapter = newsAdapter
+        newsViewModel.error.observe(this,::handleError)
+        newsViewModel.loader.observe(this,::handleLoaderVisibility)
+        newsViewModel.newsList.observe(this,::displayListToAdapter)
+
+        ItemTouchHelper(object : ItemTouchHelper.Callback() {
+            override fun getMovementFlags(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ): Int {
+                TODO("Not yet implemented")
+            }
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    private fun displayListToAdapter(articles: List<Article?>?) {
+        renderList(articles as List<Article>)
+    }
+
+
+    private fun handleLoaderVisibility(isLoading: Boolean?) {
+        binding?.progressBar?.visibility=if(isLoading == true) View.VISIBLE else View.GONE
+    }
+
+    private fun handleError(error: String?) {
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show()
     }
 
     private fun saveItem(item: Article) {

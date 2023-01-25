@@ -7,13 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.viewmodellivedata.model.Article
 import com.example.viewmodellivedata.repository.MainRepository
-import com.example.viewmodellivedata.utils.AppResult
 import kotlinx.coroutines.launch
 
 class NewsSavedItemsViewModel(private val repository: MainRepository):ViewModel() {
     var newsLiveData = MutableLiveData<List<Article>>()
-    val news: LiveData<List<Article>>
-        get() = newsLiveData
+    val news: LiveData<List<Article>> = newsLiveData
     init {
         fetchAllSavedList()
     }

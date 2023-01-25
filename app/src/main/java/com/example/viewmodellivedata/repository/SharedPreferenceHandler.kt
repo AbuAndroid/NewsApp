@@ -30,6 +30,7 @@ class SharedPreferenceHandler(context: Context) {
             item.let { getUserList.remove(it) }
             val list = Gson().toJson(getUserList)
             editor.putString(USER_NAME, list)?.commit()
+
         }
     }
     fun getSavedList(): MutableList<Article>? {
