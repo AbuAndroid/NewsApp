@@ -4,4 +4,5 @@
     <string name="str_description_text">Description</string>
     <string name="str_link_text">Link</string>
     <string name="app_second_Activity_name">NewsWebview</string>
+    <string name="str_hint_search_text">Search by title</string>
 </resources>

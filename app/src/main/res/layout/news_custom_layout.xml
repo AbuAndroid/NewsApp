@@ -15,13 +15,14 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/uiIvNewsImage"
-            android:layout_width="150dp"
-            android:layout_height="230dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_margin="10dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ImageContrastCheck,ImageContrastCheck"
+            android:background="@drawable/rounded_corders"
             tools:srcCompat="@tools:sample/avatars" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -30,10 +31,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/str_title_text"
-            android:textAlignment="center"
-            android:textSize="16sp"
+            android:textSize="13sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/uiIvNewsImage" />
 
@@ -42,32 +42,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="5dp"
             android:text="@string/str_description_text"
-            android:textAlignment="center"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="@+id/uiTvTitle"
+            android:textSize="13sp"
             app:layout_constraintStart_toStartOf="@+id/uiTvTitle"
             app:layout_constraintTop_toBottomOf="@+id/uiTvTitle" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/uiTvWebLink"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/uiBtWebLink"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
             android:layout_marginTop="10dp"
-            android:text="@string/str_link_text"
-            android:textAlignment="center"
-            android:textColor="#0277BD"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@+id/uiTvDescription"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/button_rounded_corners"
+            android:text="Link"
+            android:textSize="13sp"
+            android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="@+id/uiTvDescription"
             app:layout_constraintTop_toBottomOf="@+id/uiTvDescription" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/uiIvSaveOrRemove"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="15dp"
+            app:layout_constraintBottom_toBottomOf="@+id/uiBtWebLink"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/uiBtWebLink"
+            app:srcCompat="@drawable/ic_baseline_not_bookmarked" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
             android:background="@color/light_Blue"
-            app:layout_constraintTop_toBottomOf="@+id/uiTvWebLink" />
+            app:layout_constraintTop_toBottomOf="@+id/uiBtWebLink" />
 
         <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/uiImageProgress"
@@ -79,30 +88,7 @@
             app:layout_constraintStart_toStartOf="@+id/uiIvNewsImage"
             app:layout_constraintTop_toTopOf="@+id/uiIvNewsImage" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/uiIvSave"
-            android:layout_width="38dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="20dp"
-            app:layout_constraintBottom_toBottomOf="@+id/uiIvNewsImage"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/uiIvNewsImage"
-            app:layout_constraintTop_toTopOf="@+id/uiIvNewsImage"
-            app:layout_constraintVertical_bias="0.53"
-            app:srcCompat="@drawable/ic_baseline_bookmark_add" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/uiIvRemove"
-            android:layout_width="38dp"
-            android:layout_height="36dp"
-            app:layout_constraintBottom_toBottomOf="@+id/uiIvSave"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.768"
-            app:layout_constraintStart_toEndOf="@+id/uiIvSave"
-            app:layout_constraintTop_toTopOf="@+id/uiIvSave"
-            app:layout_constraintVertical_bias="0.53"
-            app:srcCompat="@drawable/ic_baseline_bookmark_added" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

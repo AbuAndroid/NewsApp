@@ -1,7 +1,7 @@
 package com.example.viewmodellivedata.di.module
 
 import com.example.viewmodellivedata.repository.MainRepository
-import com.example.viewmodellivedata.repository.SharedPreferenceHandler
+import com.example.viewmodellivedata.manager.SharedPreferenceHandler
 import com.example.viewmodellivedata.utils.NetworkHelper
 import com.example.viewmodellivedata.viewmodel.NewsSavedItemsViewModel
 import com.example.viewmodellivedata.viewmodel.NewsViewModel

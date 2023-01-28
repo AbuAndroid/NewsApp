@@ -5,5 +5,5 @@
         android:id="@+id/uiMiSaved"
         android:title="savedList"
         app:showAsAction="always"
-        android:icon="@drawable/ic_baseline_bookmark_added" />
+        android:icon="@drawable/ic_baseline_bookmarked" />
 </menu>

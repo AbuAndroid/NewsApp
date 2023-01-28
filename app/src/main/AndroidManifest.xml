@@ -17,7 +17,7 @@
         android:theme="@style/Theme.ViewModelLiveData"
         tools:targetApi="31">
         <activity
-            android:name=".ui.NewsSavedItems"
+            android:name=".ui.NewsSavedItemsActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

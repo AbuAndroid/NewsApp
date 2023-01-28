@@ -3,21 +3,22 @@ package com.example.viewmodellivedata.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.widget.doOnTextChanged
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.example.viewmodellivedata.R
 import com.example.viewmodellivedata.adapter.NewsAdapter
 import com.example.viewmodellivedata.databinding.ActivityMainBinding
 import com.example.viewmodellivedata.model.Article
 import com.example.viewmodellivedata.utils.NetworkHelper
-import com.example.viewmodellivedata.utils.Status
 import com.example.viewmodellivedata.viewmodel.NewsViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -25,145 +26,104 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class NewsActivity : AppCompatActivity() {
 
     private var binding: ActivityMainBinding? = null
-    private val news: MutableList<Article> = mutableListOf()
     private val newsViewModel: NewsViewModel by viewModel()
     private val newsAdapter: NewsAdapter by lazy {
         NewsAdapter(
             allNewsList = mutableListOf(),
-            onLinkClicked = this::viewWebsite,
-            onSave = this::saveItem,
-            onRemove = this::removeItem
+            onLinkClicked = this::visitNewsWebsite,
+            onSaveOrRemove = this::onSaveOrRemove
         )
     }
-    private val networkhelper : NetworkHelper by inject()
-    private var package_name = "com.android.chrome";
+    private val upDateUi by lazy {
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            ::upDate
+        )
+    }
+    private var chromePackageName = "com.android.chrome"
+
+    private val networkHelper: NetworkHelper by inject()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
-        if(networkhelper.isNetworkConnected()){
+        upDateUi
+        if (networkHelper.isNetworkConnected()) {
             setUpUi()
             setUpListeners()
-            setUpObservers()
-        }else{
-            startActivity(Intent(this,NewsSavedItems::class.java))
+        } else {
+            startActivity(Intent(this, NewsSavedItemsActivity::class.java))
         }
-    }
-
-    private fun setUpListeners() {
-//        binding?.uiEtSearch?.doOnTextChanged { text, start, before, count ->
-//            newsViewModel.filterUserList(text.toString())
-//        }
-    }
-
-    private fun setUpObservers() {
- //       newsViewModel._success.observe(this) {
-//            when (it.status) {
-//                Status.SUCCESS -> {
-//                    binding?.progressBar?.visibility = View.GONE
-//                    binding?.uiRvNewsContainer?.visibility = View.VISIBLE
-//                    it.data?.let {
-//                        //checkDataSavedInDb(it)
-//                        news.clear()
-//                        news.addAll(it)
-//                        renderList(it)
-//                    }
-//                }
-//                Status.LOADING -> {
-//                    binding?.progressBar?.visibility = View.VISIBLE
-//                    binding?.uiRvNewsContainer?.visibility = View.GONE
-//                }
-//                Status.ERROR -> {
-//                    binding?.progressBar?.visibility = View.GONE
-//                }
-//            }
-       // }
     }
 
     private fun setUpUi() {
         binding?.uiRvNewsContainer?.adapter = newsAdapter
-        newsViewModel.error.observe(this,::handleError)
-        newsViewModel.loader.observe(this,::handleLoaderVisibility)
-        newsViewModel.newsList.observe(this,::displayListToAdapter)
-
-        ItemTouchHelper(object : ItemTouchHelper.Callback() {
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                TODO("Not yet implemented")
-            }
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                TODO("Not yet implemented")
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                TODO("Not yet implemented")
-            }
-        })
     }
 
-    private fun displayListToAdapter(articles: List<Article?>?) {
-        renderList(articles as List<Article>)
+    @SuppressLint("NotifyDataSetChanged")
+    private fun setUpListeners() {
+        newsViewModel.error.observe(this, ::handleError)
+        newsViewModel.loader.observe(this, ::handleLoaderVisibility)
+        newsViewModel.newsList.observe(this, ::setNewsListToAdapter)
+        binding?.uiEtSearch?.doOnTextChanged { text, _, _, _ ->
+            setNewsListToAdapter(newsViewModel.filterNewsList(text.toString()))
+        }
+        binding?.uiSwipeRefresh?.setOnRefreshListener {
+            binding!!.uiSwipeRefresh.isRefreshing = false
+            newsViewModel.fetchAllNews()
+            newsAdapter.notifyDataSetChanged()
+        }
     }
 
+    private fun setNewsListToAdapter(articles: List<Article>?) {
+        newsAdapter.onNewsChanged(articles)
+    }
 
     private fun handleLoaderVisibility(isLoading: Boolean?) {
-        binding?.progressBar?.visibility=if(isLoading == true) View.VISIBLE else View.GONE
+        binding?.uiProgressBar?.visibility = if (isLoading == true) View.VISIBLE else View.GONE
     }
 
     private fun handleError(error: String?) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show()
     }
 
-    private fun saveItem(item: Article) {
-        //item.isSaved = true
-        newsViewModel.saveItem(item)
-    }
-
-    private fun removeItem(item: Article) {
-       // item.isSaved = false
-        newsViewModel.removeItem(item)
-    }
-
-    private fun viewWebsite(Article: Article) {
-        val link = Article.url
-        val bundle = Bundle()
-        bundle.putString("link", link)
-        val intent = Intent(this, NewsWebView::class.java)
-        intent.putExtras(bundle)
-        startActivity(intent)
-    }
-
-    private fun isPackageInstalled(packageName: String): Boolean {
-        return try {
-            packageManager.getPackageInfo(packageName, 0)
-            true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
+    private fun onSaveOrRemove(article: Article) {
+        if (article.isSaved) {
+            article.isSaved = false
+            newsViewModel.removeItem(article)
+        } else {
+            article.isSaved = true
+            newsViewModel.saveItem(article)
         }
     }
 
-//    private fun checkDataSavedInDb(newsList: List<Article>) {
-//        newsList.forEach { list ->
-//            val savedList = newsViewModel.news.value?.data
-//            savedList?.forEach {
-//                if (it.title == list.title) {
-//                    list.isSaved = true
-//                }
-//            }
-//        }
-//    }
+    private fun visitNewsWebsite(Article: Article) {
+//        val newsWebsiteLink = Article.url
+//        val bundle = Bundle()
+//        bundle.putString("link", newsWebsiteLink)
+//        val intent = Intent(this, NewsWebView::class.java)
+//        intent.putExtras(bundle)
+//        startActivity(intent)
+
+        val urlLink = Article.url
+        val builder = CustomTabsIntent.Builder()
+        builder.setShowTitle(true)
+        builder.setShareState(CustomTabsIntent.SHARE_STATE_ON)
+        builder.setInstantAppsEnabled(true)
+        val customBuilder = builder.build()
+        if(this.isPackageInstalled(chromePackageName)){
+            customBuilder.intent.setPackage(chromePackageName)
+            customBuilder.launchUrl(this, Uri.parse(urlLink))
+        }else{
+            //open other available browser
+        }
+    }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun renderList(news: List<Article>) {
-        newsAdapter.onNewsChanged(news)
-        newsAdapter.notifyDataSetChanged()
+    private fun upDate(activityResult: ActivityResult?) {
+        if (activityResult?.resultCode == RESULT_OK) {
+            newsViewModel.fetchAllNews()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -174,11 +134,24 @@ class NewsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.uiMiSaved -> {
-                val i = Intent(this, NewsSavedItems::class.java)
-                startActivity(i)
+                goToSavedNews()
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun goToSavedNews() {
+        val i = Intent(this, NewsSavedItemsActivity::class.java)
+        upDateUi.launch(i)
+    }
+
+    private fun isPackageInstalled(packageName: String): Boolean {
+        return try {
+            packageManager.getPackageInfo(packageName, 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.example.viewmodellivedata.di.module
 
 import com.example.viewmodellivedata.network.NewsApiService
-import com.example.viewmodellivedata.utils.Constants.Companion.BASE_URL
+import com.example.viewmodellivedata.warehouse.Constants.Companion.BASE_URL
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.component.KoinComponent

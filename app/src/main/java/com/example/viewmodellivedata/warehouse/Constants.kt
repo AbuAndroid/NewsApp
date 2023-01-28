@@ -1,4 +1,4 @@
-package com.example.viewmodellivedata.utils
+package com.example.viewmodellivedata.warehouse
 
 class Constants {
     companion object{
